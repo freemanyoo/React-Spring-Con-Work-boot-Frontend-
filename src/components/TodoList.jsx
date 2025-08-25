@@ -80,7 +80,7 @@ const TodoList = () => {
   // 🔹 최초 실행 및 검색어 변경 시 데이터 로드
   useEffect(() => {
     fetchData();
-  }, [page, searchParams]);
+  }, [page, searchParams, size]);
 
   // 🔹 할 일 추가 후 목록 갱신
   const handleTodoAdded = () => {
@@ -122,6 +122,16 @@ const TodoList = () => {
     setPage(newPage);
   };
 
+  //페이지 네이션 관련 상수 및 함수
+    const VISIBLE_PAGES = 10;
+    const getPageNumbers = () => {
+        if (!totalPages || totalPages < 1) return [];
+        const half = Math.floor(VISIBLE_PAGES / 2);
+        let start = Math.max(1, page - half);
+        let end = Math.min(totalPages, start + VISIBLE_PAGES - 1);
+        start = Math.max(1, end - VISIBLE_PAGES + 1);
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    };
   return (
     <Container className="mt-4">
       <h2 className="text-center">할 일 목록 (Paging & Search)</h2>
@@ -254,6 +264,23 @@ const TodoList = () => {
           </tbody>
         </Table>
       )}
+
+        {/*페이지 네이션 표시*/}
+        {totalPages > 1 && (
+            <div className="d-flex justify-content-center my-3">
+                <Pagination>
+                    <Pagination.First disabled={page === 1} onClick={() => handlePageChange(1)} />
+                    <Pagination.Prev disabled={page === 1} onClick={() => handlePageChange(page - 1)} />
+                    {getPageNumbers().map((p) => (
+                        <Pagination.Item key={p} active={p === page} onClick={() => handlePageChange(p)}>
+                            {p}
+                        </Pagination.Item>
+                    ))}
+                    <Pagination.Next disabled={page === totalPages} onClick={() => handlePageChange(page + 1)} />
+                    <Pagination.Last disabled={page === totalPages} onClick={() => handlePageChange(totalPages)} />
+                </Pagination>
+            </div>
+        )}
     </Container>
   );
 };
