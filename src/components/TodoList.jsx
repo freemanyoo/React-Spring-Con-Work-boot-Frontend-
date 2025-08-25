@@ -9,7 +9,7 @@ import {
   Col,
   Pagination,
 } from 'react-bootstrap';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '../util/axiosInstance.jsx';
 import TodoForm from './TodoForm';
 import { useNavigate } from 'react-router-dom';
 

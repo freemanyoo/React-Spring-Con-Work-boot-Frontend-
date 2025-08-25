@@ -1,42 +1,64 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.react {
+    background: aqua;
+    color: black;
+    font-size: 48px;
+    font-weight: bold;
+    padding: 16px;
+}
+.long-text {
+    max-width: 200px; /* ✅ 최대 너비 설정 */
+    word-break: break-word; /* ✅ 긴 단어가 있을 경우 자동 줄넘김 */
+    white-space: normal; /* ✅ 공백이 있을 경우 줄넘김 허용 */
+}
+.fixed-width {
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+@media (min-width: 768px) {
+    .table-title {
+        width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .table-writer {
+        width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@media (max-width: 768px) {
+    .table-title,
+    .table-writer {
+        width: 100%;
+        white-space: normal; /* ✅ 작은 화면에서는 줄바꿈 허용 */
+        overflow-wrap: break-word; /* ✅ 단어가 길면 줄바꿈 */
+        text-overflow: clip; /* ✅ "..." 대신 전체 표시 */
+    }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* 사이드 메뉴 - 기본 레이아웃 */
+.side-menu {
+    overflow-y: auto; /* 스크롤 가능 */
 }
 
-.card {
-  padding: 2em;
+/* 큰 화면 (데스크톱)에서 높이를 화면 전체로 설정 */
+@media (min-width: 768px) {
+    .side-menu {
+        min-height: 100vh; /* 화면 전체 높이 */
+    }
 }
 
-.read-the-docs {
-  color: #888;
+/* 작은 화면 (모바일)에서 높이를 콘텐츠에 맞게 조정 */
+@media (max-width: 767px) {
+    .side-menu {
+        height: auto; /* 높이를 콘텐츠 크기에 맞춤 */
+        min-height: auto; /* 최소 높이 제한 제거 */
+    }
 }
