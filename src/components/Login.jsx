@@ -36,6 +36,7 @@ const Login = () => {
 
             localStorage.setItem('accessToken', response.data.accessToken); // 토큰 저장
             localStorage.setItem('refreshToken', response.data.refreshToken); // 토큰 저장
+            localStorage.setItem('profileImg', response.data.profileImg); // 토큰 저장
             alert('로그인 성공!');
             navigate('/'); // 로그인 후 대시보드로 이동
         } catch (error) {

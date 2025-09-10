@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col,  Image as BootstrapImage  } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,16 +17,40 @@ const Register = () => {
     const [isChecking, setIsChecking] = useState(false); // ✅ 중복 확인 요청 상태
     const [idCheckResult, setIdCheckResult] = useState(null); // ✅ 중복 체크 결과 메시지
 
+    // ✅ 프로필 이미지 관련 상태 추가
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
+
     useEffect(() => {
         setPasswordMatch(formData.mpw === formData.confirmPassword);
-    }, [formData.password, formData.confirmPassword]);
+    }, [formData.mpw, formData.confirmPassword]);
 
+    // ✅ [개선] 이미지 미리보기 메모리 누수 방지를 위한 useEffect 추가
+    useEffect(() => {
+        // 컴포넌트가 언마운트될 때 previewImage URL을 메모리에서 해제합니다.
+        return () => {
+            if (previewImage) {
+                URL.revokeObjectURL(previewImage);
+            }
+        };
+    }, [previewImage]);
     // 입력 값 변경 핸들러
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
 
         if (e.target.name === 'mid') {
             setIdCheckResult(null); // ✅ 아이디 입력 시 중복 검사 결과 초기화
+        }
+    };
+
+    // ✅ 파일 선택 핸들러 추가
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            // 이미지 미리보기 URL 생성
+            const previewUrl = URL.createObjectURL(file);
+            setPreviewImage(previewUrl);
         }
     };
 
@@ -77,14 +101,39 @@ const Register = () => {
             return;
         }
 
+        // 1. FormData 객체 생성
+        const registerData = new FormData();
+
+        // 2. 파일 데이터 추가
+        if (selectedFile) {
+            registerData.append('profileImage', selectedFile);
+        }
+
+        // 3. JSON 데이터를 문자열로 변환하여 추가
+        // 서버에서는 이 'user' 파트를 JSON으로 파싱해야 합니다.
+        registerData.append('user', new Blob([JSON.stringify({
+            mid: formData.mid,
+            mpw: formData.mpw,
+            email: formData.email,
+        })], {
+            type: "application/json"
+        }));
+
         try {
-            const response = await axios.post(
-                'http://localhost:8080/member/register',
-                formData,
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                },
-            );
+            // const response = await axios.post(
+            //     'http://localhost:8080/member/register',
+            //     formData,
+            //     {
+            //         headers: { 'Content-Type': 'application/json' },
+            //     },
+            // );
+
+            // 4. FormData를 서버로 전송
+            // axios가 자동으로 'multipart/form-data' 헤더를 설정해줍니다.
+            await axios.post('http://localhost:8080/member/register', registerData);
+
+            alert('회원가입 성공!');
+            navigate('/login');
             alert('회원가입 성공!');
             navigate('/login'); // 로그인 페이지로 이동
         } catch (error) {
@@ -165,6 +214,24 @@ const Register = () => {
                         placeholder="이메일 입력"
                     />
                 </Form.Group>
+
+                {/* ✅ 프로필 이미지 업로드 필드 추가 */}
+                <Form.Group className="mb-3">
+                    <Form.Label>프로필 이미지</Form.Label>
+                    <Form.Control
+                        type="file"
+                        accept="image/*" // 이미지 파일만 선택 가능하도록 설정
+                        onChange={handleFileChange}
+                    />
+                </Form.Group>
+
+                {/* ✅ 이미지 미리보기 영역 */}
+                {previewImage && (
+                    <div className="text-center mb-3">
+                        <BootstrapImage src={previewImage} thumbnail style={{ maxWidth: '200px' }} />
+                    </div>
+                )}
+
                 <Button variant="primary" type="submit" className="w-100">
                     가입하기
                 </Button>
