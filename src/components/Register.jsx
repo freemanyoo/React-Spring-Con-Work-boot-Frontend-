@@ -19,21 +19,29 @@ const Register = () => {
 
     // ✅ 프로필 이미지 관련 상태 추가
     const [selectedFile, setSelectedFile] = useState(null);
-    const [previewImage, setPreviewImage] = useState(null);
+    // 수정1, 이미지에서, 동영상 같이 되게끔추가
+    //전
+    // const [previewImage, setPreviewImage] = useState(null);
+    // 후
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [fileType, setFileType] = useState(''); // ✅ 파일 타입을 저장할 상태 (image | video)
+
 
     useEffect(() => {
         setPasswordMatch(formData.mpw === formData.confirmPassword);
     }, [formData.mpw, formData.confirmPassword]);
 
+    // 수정2,
+    // previewImage ->  previewUrl
     // ✅ [개선] 이미지 미리보기 메모리 누수 방지를 위한 useEffect 추가
     useEffect(() => {
         // 컴포넌트가 언마운트될 때 previewImage URL을 메모리에서 해제합니다.
         return () => {
-            if (previewImage) {
-                URL.revokeObjectURL(previewImage);
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
             }
         };
-    }, [previewImage]);
+    }, [previewUrl]);
     // 입력 값 변경 핸들러
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,14 +51,35 @@ const Register = () => {
         }
     };
 
+    // 수정3
     // ✅ 파일 선택 핸들러 추가
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // setSelectedFile(file);
+            // // 이미지 미리보기 URL 생성
+            // const previewUrl = URL.createObjectURL(file);
+            // setPreviewImage(previewUrl);
+            // 후
+            // 이전 미리보기 URL이 있다면 해제
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+
             setSelectedFile(file);
-            // 이미지 미리보기 URL 생성
-            const previewUrl = URL.createObjectURL(file);
-            setPreviewImage(previewUrl);
+
+            // 파일 타입 확인
+            if (file.type.startsWith('image/')) {
+                setFileType('image');
+            } else if (file.type.startsWith('video/')) {
+                setFileType('video');
+            } else {
+                setFileType(''); // 지원하지 않는 파일 형식
+            }
+
+            // 새로운 미리보기 URL 생성
+            const newPreviewUrl = URL.createObjectURL(file);
+            setPreviewUrl(newPreviewUrl);
         }
     };
 
@@ -104,6 +133,7 @@ const Register = () => {
         // 1. FormData 객체 생성
         const registerData = new FormData();
 
+        // 수정4, 기존 그대로 사용. (profileMedia 보류)
         // 2. 파일 데이터 추가
         if (selectedFile) {
             registerData.append('profileImage', selectedFile);
@@ -215,20 +245,36 @@ const Register = () => {
                     />
                 </Form.Group>
 
+                {/*수정5*/}
                 {/* ✅ 프로필 이미지 업로드 필드 추가 */}
                 <Form.Group className="mb-3">
-                    <Form.Label>프로필 이미지</Form.Label>
+                    <Form.Label>프로필 이미지 또는 동영상</Form.Label>
                     <Form.Control
                         type="file"
-                        accept="image/*" // 이미지 파일만 선택 가능하도록 설정
+                        accept="image/*, video/*" // 이미지 파일만 선택 가능하도록 설정
                         onChange={handleFileChange}
                     />
                 </Form.Group>
 
+                {/*수정6*/}
                 {/* ✅ 이미지 미리보기 영역 */}
-                {previewImage && (
-                    <div className="text-center mb-3">
-                        <BootstrapImage src={previewImage} thumbnail style={{ maxWidth: '200px' }} />
+                {/*{previewImage && (*/}
+                {/*    <div className="text-center mb-3">*/}
+                {/*        <BootstrapImage src={previewImage} thumbnail style={{ maxWidth: '200px' }} />*/}
+                {/*    </div>*/}
+                {/*)}*/}
+                {/* ✅ 미디어 미리보기 영역 수정 */}
+                {previewUrl && (
+                    <div className="text-center mb-3" style={{ maxWidth: '300px', margin: 'auto' }}>
+                        {fileType === 'image' && (
+                            <BootstrapImage src={previewUrl} thumbnail style={{ width: '100%' }} />
+                        )}
+                        {fileType === 'video' && (
+                            // ✅ video 태그를 사용하여 동영상 미리보기
+                            <video src={previewUrl} controls autoPlay muted loop style={{ width: '100%' }}>
+                                Your browser does not support the video tag.
+                            </video>
+                        )}
                     </div>
                 )}
 
