@@ -1,28 +1,55 @@
-import { Navbar, Nav, Container, Button, Image  } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button, Image } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // axios를 import 합니다.
 
 const Header = () => {
     const { user, logout, extendSession, remainingTime } = useAuth();
     const navigate = useNavigate();
 
-    // ✅ 로컬 스토리지에서 가져온 profileImg ID를 저장할 상태
     const [profileImgId, setProfileImgId] = useState(null);
+    const [mediaType, setMediaType] = useState(''); // ✅ 'image' 또는 'video'를 저장할 상태
 
-    // ✅ 컴포넌트가 처음 렌더링될 때 로컬 스토리지에서 값을 가져옵니다.
     useEffect(() => {
         const storedProfileImg = localStorage.getItem('profileImg');
         if (storedProfileImg) {
             setProfileImgId(storedProfileImg);
-        }
-    }, []); // 빈 배열은 컴포넌트 마운트 시 한 번만 실행됨을 의미합니다.
 
-    // 남은 시간을 MM:SS 형식으로 변환하는 함수
+            // ✅ 미디어 타입을 확인하는 함수
+            const fetchMediaType = async () => {
+                try {
+                    // HEAD 요청으로 Content-Type만 가져옵니다.
+                    const response = await axios.head(`http://localhost:8080/member/view/${storedProfileImg}`);
+                    const contentType = response.headers['content-type'];
+
+                    if (contentType.startsWith('image/')) {
+                        setMediaType('image');
+                    } else if (contentType.startsWith('video/')) {
+                        setMediaType('video');
+                    }
+                } catch (error) {
+                    console.error("Error fetching media type:", error);
+                }
+            };
+
+            fetchMediaType();
+        }
+    }, []);
+
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+    };
+
+    const mediaStyle = {
+        width: '40px',
+        height: '40px',
+        marginLeft: '10px',
+        marginRight: '5px',
+        borderRadius: '50%',
+        objectFit: 'cover', // ✅ object-fit을 사용하여 비율을 유지하면서 채웁니다.
     };
 
     return (
@@ -43,19 +70,28 @@ const Header = () => {
                                     Ai Test
                                 </Nav.Link>
 
-                                {/* ✅ 프로필 이미지 표시 영역 */}
-                                {profileImgId  && (
-                                    <Image
-                                        src={`http://localhost:8080/member/view/${profileImgId}`}
-                                        alt="Profile"
-                                        roundedCircle // 이미지를 원형으로 만듭니다.
-                                        style={{
-                                            width: '40px',   // 크기는 여기서 조절 가능합니다.
-                                            height: '40px',
-                                            marginLeft: '10px',
-                                            marginRight: '5px'
-                                        }}
-                                    />
+                                {/* ✅ 프로필 미디어 표시 영역 */}
+                                {profileImgId && (
+                                    <>
+                                        {mediaType === 'image' && (
+                                            <Image
+                                                src={`http://localhost:8080/member/view/${profileImgId}`}
+                                                alt="Profile"
+                                                style={mediaStyle}
+                                            />
+                                        )}
+                                        {/*Header.jsx 컴포넌트를 업데이트했음을 알려드립니다. 이제 컴포넌트는 프로필 미디어 유형(이미지 또는 동영상)을 확인하고 그에 따라 렌더링합니다. 이를 통해 프로필 사진과 프로필 동영상을 모두 표시할 수*/}
+                                        {/*있습니다. 또한 미디어 유형 확인을 처리하기 위해 axios를 추가했습니다.*/}
+                                        {mediaType === 'video' && (
+                                            <video
+                                                src={`http://localhost:8080/member/view/${profileImgId}`}
+                                                autoPlay
+                                                muted
+                                                loop
+                                                style={mediaStyle}
+                                            />
+                                        )}
+                                    </>
                                 )}
 
                                 <Nav.Link>환영합니다, {user.mid}님!</Nav.Link>
