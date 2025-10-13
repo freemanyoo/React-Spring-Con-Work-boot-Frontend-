@@ -29,7 +29,7 @@ const ToolClassification = () => {
 
         const formData = new FormData();
         formData.append('image', file);
-        dispatch(uploadImageRequest({ formData, type: 3 }));
+        dispatch(uploadImageRequest({ formData, type: 1 }));
     };
 
     return (
