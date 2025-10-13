@@ -8,6 +8,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import TodoList from './components/TodoList';
 import TodoEdit from './components/TodoEdit';
 import './App.css'
+import AiTest from "./components/AiTest.jsx";
 
 function App() {
 
@@ -23,7 +24,7 @@ function App() {
                   <Route path="/loginSuccess" element={<LoginSuccess />} />
                   <Route path="/list" element={<TodoList />} />
                   <Route path="/todo/edit/:tno" element={<TodoEdit />} />
-                  {/*<Route path="/ai" element={<AiTest />} />*/}
+                  <Route path="/ai" element={<AiTest />} />
               </Routes>
           </AuthProvider>
       </>
