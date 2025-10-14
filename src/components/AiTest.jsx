@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Container, Row, Col, Nav } from 'react-bootstrap';
 import Header from '../components/Header';
 import ToolClassification from "./ai/ToolClassification.jsx";
+import SamsungStockPrediction from "./ai/SamsungStockPrediction.jsx";
 
 
 const AiTest = () => {
