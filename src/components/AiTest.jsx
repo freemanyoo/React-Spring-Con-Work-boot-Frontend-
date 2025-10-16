@@ -4,6 +4,9 @@ import { Container, Row, Col, Nav } from 'react-bootstrap';
 import Header from '../components/Header';
 import ToolClassification from "./ai/ToolClassification.jsx";
 import SamsungStockPrediction from "./ai/SamsungStockPrediction.jsx";
+import AnimalImageClassification from "./ai/AnimalImageClassification.jsx";
+import WasteApplianceClassification from "./ai/WasteApplianceClassification.jsx";
+import YoloClassification from "./ai/YoloClassification.jsx";
 
 
 const AiTest = () => {

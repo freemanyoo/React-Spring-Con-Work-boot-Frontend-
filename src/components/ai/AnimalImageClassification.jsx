@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { uploadImageRequest } from '../../store/ai/aiSlice';
 import './css/ai.css';
-
-const ToolClassification = () => {
+const AnimalImageClassification = () => {
     const dispatch = useDispatch();
     const { loading, result, error } = useSelector((state) => state.ai);
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null); // ✅ 미리보기 상태 추가
 
-    // ✅ 파일 선택 핸들러
+    // 파일 선택 핸들러
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
         setFile(selectedFile);
@@ -20,7 +19,7 @@ const ToolClassification = () => {
         }
     };
 
-    // ✅ 업로드 핸들러
+    // 업로드 핸들러
     const handleUpload = () => {
         if (!file) {
             alert('파일을 선택해주세요.');
@@ -29,13 +28,13 @@ const ToolClassification = () => {
 
         const formData = new FormData();
         formData.append('image', file);
-        dispatch(uploadImageRequest({ formData, type: 3 }));
+        dispatch(uploadImageRequest({ formData, type: 1 }));
     };
 
     return (
         <div className="tool-classification">
-            <h3>🔧 공구 툴 이미지 분류</h3>
-            <p>AI 모델이 공구 이미지를 분석하고 분류합니다.</p>
+            <h3>🐶 동물상 이미지 분류</h3>
+            <p>AI 모델이 동물상 이미지를 분석하고 분류합니다.</p>
 
             {/* ✅ 파일 업로드 */}
             <input type="file" accept="image/*" onChange={handleFileChange} />
@@ -77,4 +76,4 @@ const ToolClassification = () => {
     );
 };
 
-export default ToolClassification;
+export default AnimalImageClassification;

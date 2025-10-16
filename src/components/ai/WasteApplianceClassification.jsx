@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { uploadImageRequest } from '../../store/ai/aiSlice';
 import './css/ai.css';
 
-const ToolClassification = () => {
+const WasteApplianceClassification = () => {
     const dispatch = useDispatch();
     const { loading, result, error } = useSelector((state) => state.ai);
     const [file, setFile] = useState(null);
@@ -29,13 +29,13 @@ const ToolClassification = () => {
 
         const formData = new FormData();
         formData.append('image', file);
-        dispatch(uploadImageRequest({ formData, type: 3 }));
+        dispatch(uploadImageRequest({ formData, type: 2 }));
     };
 
     return (
         <div className="tool-classification">
-            <h3>🔧 공구 툴 이미지 분류</h3>
-            <p>AI 모델이 공구 이미지를 분석하고 분류합니다.</p>
+            <h3>🛠️ 폐가전 이미지 분류</h3>
+            <p>폐가전 제품을 업로드하여 AI가 분류할 수 있도록 합니다.</p>
 
             {/* ✅ 파일 업로드 */}
             <input type="file" accept="image/*" onChange={handleFileChange} />
@@ -52,7 +52,7 @@ const ToolClassification = () => {
                 {loading ? '업로드 중...' : '이미지 업로드'}
             </button>
 
-            {/* 결과 표시 */}
+            {/* ✅ 결과 표시 */}
             {result && (
                 <div className="result">
                     <h4>📌 결과</h4>
@@ -71,10 +71,10 @@ const ToolClassification = () => {
                 </div>
             )}
 
-            {/* 에러 표시 */}
+            {/* ✅ 에러 표시 */}
             {error && <p className="error">❌ 오류: {error}</p>}
         </div>
     );
 };
 
-export default ToolClassification;
+export default WasteApplianceClassification;
